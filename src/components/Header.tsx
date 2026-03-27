@@ -29,7 +29,6 @@ export function Header({ onSignInClick }: HeaderProps) {
         <img src="/WhatsApp_Image_2026-03-18_at_21.42.15.jpeg" alt="IRCA Glowdom" className={styles.logoImage} />
       </div>
       <div className={styles.right}>
-        <div className={styles.powered}>Powered by Claude AI · Glowdom Technologies</div>
         {!user && onSignInClick && (
           <button onClick={onSignInClick} className={styles.signInBtn}>
             Sign In
