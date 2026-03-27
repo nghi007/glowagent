@@ -411,7 +411,12 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
           Unlock GlowAgent's full suite — proposal writing, financial projections, compliance guidance and more.
         </p>
         <div className={styles.ctaBtnGroup}>
-          <button className={styles.ctaBtn}>Unlock Full GlowAgent — from NAD 299/mo</button>
+          <button
+            className={styles.ctaBtn}
+            onClick={() => window.open('https://glowagent.com/contact', '_blank')}
+          >
+            Unlock Full GlowAgent — from NAD 299/mo
+          </button>
           <button
             className={styles.exportBtn}
             onClick={handleExportPDF}

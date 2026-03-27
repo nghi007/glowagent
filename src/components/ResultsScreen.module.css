@@ -433,11 +433,15 @@
   font-size: 14px;
   font-weight: 700;
   transition: all 0.2s;
+  cursor: pointer;
+  border: 2px solid var(--ink);
 }
 
 .ctaBtn:hover {
   background: var(--paper);
   color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .exportBtn {
