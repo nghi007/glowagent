@@ -413,7 +413,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
         <div className={styles.ctaBtnGroup}>
           <button
             className={styles.ctaBtn}
-            onClick={() => window.open('https://glowagent.com/contact', '_blank')}
+            onClick={() => window.open('https://elyambala.com', '_blank')}
           >
             Unlock Full GlowAgent — from NAD 299/mo
           </button>
