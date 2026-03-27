@@ -111,9 +111,14 @@
 
 .dimBarItem {
   display: grid;
-  grid-template-columns: 130px 1fr 36px;
-  align-items: center;
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light);
+}
+
+.dimBarItem:last-child {
+  border-bottom: none;
 }
 
 .dimName {
@@ -291,6 +296,18 @@
   display: block;
 }
 
+.radarChart text,
+.radarLabel {
+  fill: var(--ink) !important;
+}
+
+@media print {
+  .radarChart text,
+  .radarLabel {
+    fill: #0f0e0c !important;
+  }
+}
+
 .benchmarkChart {
   display: grid;
   gap: 24px;
@@ -457,15 +474,26 @@
   }
 }
 
+@media print {
+  .dimBarItem {
+    page-break-inside: avoid;
+    padding: 8px 0;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartCard {
+    page-break-inside: avoid;
+    margin-bottom: 25px;
+  }
+}
+
 @media (max-width: 768px) {
   .scoreSection {
     grid-template-columns: 1fr;
     text-align: center;
-  }
-
-  .dimBarItem {
-    grid-template-columns: 90px 1fr 28px;
-    gap: 10px;
   }
 
   .chartsGrid {

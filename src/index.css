@@ -23,6 +23,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body.dark-mode {
+  --ink: #f6f1e8;
+  --paper: #0f0e0c;
+  --mid: #b8b0a0;
+  --light: #2a2620;
+  --card: #1a1815;
+  --gray: #9b9b9b;
+}
+
+body.dark-mode .radarChart text {
+  fill: rgba(246, 241, 232, 0.7) !important;
+}
+
 * {
   margin: 0;
   padding: 0;

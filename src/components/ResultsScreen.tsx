@@ -90,9 +90,9 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
             background: 'rgba(245, 117, 71, 0.1)',
             borderRadius: '6px',
             fontSize: '13px',
-            color: 'rgba(255,255,255,0.8)'
+            color: 'var(--ink)'
           }}>
-            <strong style={{ color: '#f57547' }}>
+            <strong style={{ color: 'var(--orange-bright)' }}>
               {result.percentileRank}th percentile
             </strong>
             {' '}— You score higher than {result.percentileRank}% of similar businesses
@@ -112,7 +112,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
               <div key={key} className={styles.dimBarItem}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                   <div className={styles.dimName}>{DIM_LABELS[key]}</div>
-                  <div style={{ fontSize: '11px', color: vsAvg >= 0 ? '#4ade80' : '#f87171' }}>
+                  <div style={{ fontSize: '11px', color: vsAvg >= 0 ? 'var(--success)' : 'var(--orange-dark)' }}>
                     {vsAvg >= 0 ? '+' : ''}{vsAvg} vs avg
                   </div>
                 </div>
@@ -121,7 +121,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                   <div className={styles.dimScore}>{score}/100</div>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--mid)', opacity: 0.6 }}>
                     {percentile}th percentile
                   </div>
                 </div>
@@ -136,7 +136,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
         <div className={styles.chartsGrid}>
           <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>Business Health Radar</h3>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '4px', marginBottom: '12px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--mid)', opacity: 0.7, marginTop: '4px', marginBottom: '12px' }}>
               Your profile vs. average SME benchmarks
             </p>
             <svg viewBox="0 0 200 200" className={styles.radarChart}>
@@ -239,9 +239,9 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                     y={y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fill="rgba(255,255,255,0.7)"
                     fontSize="9"
                     fontWeight="600"
+                    className="radarLabel"
                   >
                     {DIM_LABELS[key]}
                   </text>
@@ -259,27 +259,27 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                 <div style={{
                   width: '16px',
                   height: '3px',
-                  background: '#f57547',
+                  background: 'var(--orange-bright)',
                   borderRadius: '2px'
                 }} />
-                <span style={{ color: 'rgba(255,255,255,0.6)' }}>Your Score</span>
+                <span style={{ color: 'var(--mid)' }}>Your Score</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{
                   width: '16px',
                   height: '3px',
-                  background: 'rgba(150,150,150,0.5)',
+                  background: 'var(--gray)',
                   borderRadius: '2px',
-                  border: '1px dashed rgba(150,150,150,0.5)'
+                  border: '1px dashed var(--gray)'
                 }} />
-                <span style={{ color: 'rgba(255,255,255,0.6)' }}>SME Average</span>
+                <span style={{ color: 'var(--mid)' }}>SME Average</span>
               </div>
             </div>
           </div>
 
           <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>Comparison to SME Benchmarks</h3>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px', marginBottom: '16px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--mid)', opacity: 0.7, marginTop: '8px', marginBottom: '16px' }}>
               Based on {result.benchmarks.length * 487} businesses analyzed
             </p>
             <div className={styles.benchmarkChart}>
@@ -296,7 +296,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                         {isTopQuartile && ' ⭐'}
                       </div>
                       {isTopQuartile && (
-                        <div style={{ fontSize: '11px', color: '#4ade80', marginBottom: '6px' }}>
+                        <div style={{ fontSize: '11px', color: 'var(--success)', marginBottom: '6px' }}>
                           Top 25% percentile
                         </div>
                       )}
@@ -335,7 +335,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                           </div>
                         </div>
                       </div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '6px' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--mid)', opacity: 0.7, marginTop: '6px' }}>
                         {isAboveAvg
                           ? `You're ${bench.yourScore - bench.avgScore} points above average`
                           : `${bench.avgScore - bench.yourScore} points below average`}
