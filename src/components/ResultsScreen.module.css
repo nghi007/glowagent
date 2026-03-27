@@ -257,6 +257,113 @@
   margin-bottom: 0;
 }
 
+.chartsSection {
+  margin-bottom: 32px;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.chartCard {
+  background: var(--card);
+  border: 1px solid var(--light);
+  padding: 24px;
+}
+
+.chartTitle {
+  font-family: var(--heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.radarChart {
+  width: 100%;
+  height: auto;
+  max-width: 280px;
+  margin: 0 auto;
+  display: block;
+}
+
+.benchmarkChart {
+  display: grid;
+  gap: 24px;
+}
+
+.benchmarkItem {
+  display: grid;
+  gap: 12px;
+}
+
+.benchmarkLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.benchmarkBars {
+  display: grid;
+  gap: 8px;
+}
+
+.benchmarkRow {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.benchmarkRowLabel {
+  font-size: 10px;
+  color: var(--mid);
+  font-weight: 500;
+}
+
+.benchmarkBarTrack {
+  height: 20px;
+  background: var(--light);
+  position: relative;
+  overflow: hidden;
+}
+
+.benchmarkBarYou,
+.benchmarkBarAvg,
+.benchmarkBarTop {
+  height: 100%;
+  position: relative;
+  transition: width 1s ease 0.5s;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+}
+
+.benchmarkBarYou {
+  background: var(--orange);
+}
+
+.benchmarkBarAvg {
+  background: rgba(100, 100, 100, 0.6);
+}
+
+.benchmarkBarTop {
+  background: var(--success);
+}
+
+.benchmarkValue {
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+}
+
 .cta {
   background: var(--orange);
   padding: 32px;
@@ -279,6 +386,13 @@
   opacity: 0.7;
 }
 
+.ctaBtnGroup {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .ctaBtn {
   background: var(--ink);
   color: var(--paper);
@@ -292,6 +406,28 @@
 .ctaBtn:hover {
   background: var(--paper);
   color: var(--ink);
+}
+
+.exportBtn {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--ink);
+  padding: 16px 32px;
+  font-family: var(--heading);
+  font-size: 14px;
+  font-weight: 700;
+  border: 2px solid var(--ink);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.exportBtn:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.exportBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .restartLink {
@@ -330,5 +466,18 @@
   .dimBarItem {
     grid-template-columns: 90px 1fr 28px;
     gap: 10px;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .ctaBtnGroup {
+    flex-direction: column;
+  }
+
+  .ctaBtn,
+  .exportBtn {
+    width: 100%;
   }
 }

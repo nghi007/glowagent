@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styles from './ResultsScreen.module.css';
 import { type AnalysisResult, getTierDescription, getTierLabel } from '../utils/analysis';
 import { DIM_LABELS } from '../data/questions';
+import { exportToPDF } from '../utils/pdfExport';
 
 interface ResultsScreenProps {
   result: AnalysisResult;
@@ -10,6 +11,8 @@ interface ResultsScreenProps {
 
 export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
   const [scoreCount, setScoreCount] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
   const tierLabel = getTierLabel(result.tier);
   const tierDesc = getTierDescription(result.tier);
 
@@ -36,8 +39,21 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
 
   const sortedDims = Object.entries(result.dimensionScores).sort((a, b) => b[1] - a[1]);
 
+  const handleExportPDF = async () => {
+    if (!reportRef.current) return;
+    setIsExporting(true);
+    try {
+      await exportToPDF(reportRef.current, result);
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+      alert('Failed to export PDF. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <div className={styles.results}>
+    <div className={styles.results} ref={reportRef}>
       <div className={styles.header}>
         <div className={styles.eyebrow}>Your Business Health Report</div>
         <h1 className={styles.title}>
@@ -90,6 +106,142 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      <div className={styles.chartsSection}>
+        <div className={styles.sectionTitle}>Visual Breakdown</div>
+        <div className={styles.chartsGrid}>
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartTitle}>Radar Chart</h3>
+            <svg viewBox="0 0 200 200" className={styles.radarChart}>
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)" />
+                </pattern>
+              </defs>
+
+              {[0, 1, 2, 3, 4].map((level) => {
+                const radius = 20 + level * 16;
+                const points = Object.keys(result.dimensionScores).map((_, i) => {
+                  const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
+                  const x = 100 + radius * Math.cos(angle);
+                  const y = 100 + radius * Math.sin(angle);
+                  return `${x},${y}`;
+                }).join(' ');
+                return (
+                  <polygon
+                    key={level}
+                    points={points}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.1)"
+                    strokeWidth="0.5"
+                  />
+                );
+              })}
+
+              {Object.keys(result.dimensionScores).map((_, i) => {
+                const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
+                const x2 = 100 + 100 * Math.cos(angle);
+                const y2 = 100 + 100 * Math.sin(angle);
+                return (
+                  <line
+                    key={i}
+                    x1="100"
+                    y1="100"
+                    x2={x2}
+                    y2={y2}
+                    stroke="rgba(255,255,255,0.1)"
+                    strokeWidth="0.5"
+                  />
+                );
+              })}
+
+              <polygon
+                points={Object.entries(result.dimensionScores).map(([_, score], i) => {
+                  const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
+                  const radius = 20 + (score / 100) * 80;
+                  const x = 100 + radius * Math.cos(angle);
+                  const y = 100 + radius * Math.sin(angle);
+                  return `${x},${y}`;
+                }).join(' ')}
+                fill="rgba(245, 117, 71, 0.3)"
+                stroke="#f57547"
+                strokeWidth="2"
+              />
+
+              {Object.entries(result.dimensionScores).map(([key, score], i) => {
+                const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
+                const labelRadius = 110;
+                const x = 100 + labelRadius * Math.cos(angle);
+                const y = 100 + labelRadius * Math.sin(angle);
+                return (
+                  <text
+                    key={key}
+                    x={x}
+                    y={y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="rgba(255,255,255,0.7)"
+                    fontSize="10"
+                    fontWeight="500"
+                  >
+                    {DIM_LABELS[key]}
+                  </text>
+                );
+              })}
+            </svg>
+          </div>
+
+          <div className={styles.chartCard}>
+            <h3 className={styles.chartTitle}>Comparison to Benchmarks</h3>
+            <div className={styles.benchmarkChart}>
+              {sortedDims.slice(0, 3).map(([key, score]) => {
+                const avgScore = 55;
+                const topScore = 85;
+                return (
+                  <div key={key} className={styles.benchmarkItem}>
+                    <div className={styles.benchmarkLabel}>{DIM_LABELS[key]}</div>
+                    <div className={styles.benchmarkBars}>
+                      <div className={styles.benchmarkRow}>
+                        <span className={styles.benchmarkRowLabel}>You</span>
+                        <div className={styles.benchmarkBarTrack}>
+                          <div
+                            className={styles.benchmarkBarYou}
+                            style={{ width: `${score}%` }}
+                          >
+                            <span className={styles.benchmarkValue}>{score}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.benchmarkRow}>
+                        <span className={styles.benchmarkRowLabel}>Avg</span>
+                        <div className={styles.benchmarkBarTrack}>
+                          <div
+                            className={styles.benchmarkBarAvg}
+                            style={{ width: `${avgScore}%` }}
+                          >
+                            <span className={styles.benchmarkValue}>{avgScore}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.benchmarkRow}>
+                        <span className={styles.benchmarkRowLabel}>Top</span>
+                        <div className={styles.benchmarkBarTrack}>
+                          <div
+                            className={styles.benchmarkBarTop}
+                            style={{ width: `${topScore}%` }}
+                          >
+                            <span className={styles.benchmarkValue}>{topScore}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -155,7 +307,16 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
         <p className={styles.ctaSub}>
           Unlock GlowAgent's full suite — proposal writing, financial projections, compliance guidance and more.
         </p>
-        <button className={styles.ctaBtn}>Unlock Full GlowAgent — from NAD 299/mo</button>
+        <div className={styles.ctaBtnGroup}>
+          <button className={styles.ctaBtn}>Unlock Full GlowAgent — from NAD 299/mo</button>
+          <button
+            className={styles.exportBtn}
+            onClick={handleExportPDF}
+            disabled={isExporting}
+          >
+            {isExporting ? 'Generating PDF...' : '📥 Export Report as PDF'}
+          </button>
+        </div>
         <br />
         <button className={styles.restartLink} onClick={onRestart}>
           ← Retake diagnostic
