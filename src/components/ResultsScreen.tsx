@@ -11,7 +11,6 @@ interface ResultsScreenProps {
 
 export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
   const [scoreCount, setScoreCount] = useState(0);
-  const [isExporting, setIsExporting] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const tierLabel = getTierLabel(result.tier);
   const tierDesc = getTierDescription(result.tier);
@@ -41,14 +40,11 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
 
   const handleExportPDF = async () => {
     if (!reportRef.current) return;
-    setIsExporting(true);
     try {
       await exportToPDF(reportRef.current, result);
     } catch (error) {
       console.error('Failed to export PDF:', error);
       alert('Failed to export PDF. Please try again.');
-    } finally {
-      setIsExporting(false);
     }
   };
 
@@ -312,9 +308,8 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
           <button
             className={styles.exportBtn}
             onClick={handleExportPDF}
-            disabled={isExporting}
           >
-            {isExporting ? 'Generating PDF...' : '📥 Export Report as PDF'}
+            📥 Print / Save as PDF
           </button>
         </div>
         <br />
