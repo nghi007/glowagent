@@ -1,0 +1,87 @@
+.intro {
+  animation: fadeIn 0.5s ease;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: var(--serif);
+  font-size: clamp(36px, 8vw, 60px);
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+.highlight {
+  font-style: italic;
+  color: var(--orange);
+}
+
+.description {
+  color: var(--mid);
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 560px;
+  margin-bottom: 40px;
+}
+
+.dimensions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.dimTag {
+  font-size: 11px;
+  padding: 4px 12px;
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  letter-spacing: 0.06em;
+}
+
+.startBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 18px 36px;
+  font-family: var(--heading);
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.startBtn:hover {
+  background: var(--orange);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.startBtn svg {
+  transition: transform 0.2s;
+}
+
+.startBtn:hover svg {
+  transform: translateX(4px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
