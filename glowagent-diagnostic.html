@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlowAgent — Business Diagnostic</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --paper: #f6f1e8;
+    --amber: #d4890a;
+    --amber-bright: #f0a020;
+    --rust: #b83b1a;
+    --sage: #2d4a30;
+    --mid: #5a5245;
+    --light: #e8e0d0;
+    --card: #fffcf5;
+    --success: #2d6b35;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  /* ── HEADER ─────────────────────── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--light);
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+
+  .logo span { color: var(--amber); }
+
+  .powered {
+    font-size: 10px;
+    color: var(--mid);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAIN LAYOUT ────────────────── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── INTRO ──────────────────────── */
+  #intro-screen { animation: fadeIn 0.5s ease; }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px, 8vw, 60px);
+    font-weight: 600;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .intro-desc {
+    color: var(--mid);
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 560px;
+    margin-bottom: 40px;
+  }
+
+  .dimensions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .dim-tag {
+    font-size: 11px;
+    padding: 4px 12px;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    letter-spacing: 0.06em;
+  }
+
+  .start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 18px 36px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .start-btn:hover {
+    background: var(--amber);
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .start-btn svg { transition: transform 0.2s; }
+  .start-btn:hover svg { transform: translateX(4px); }
+
+  /* ── QUIZ ───────────────────────── */
+  #quiz-screen { display: none; animation: fadeIn 0.4s ease; }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--light);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--amber);
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--mid);
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .question-num {
+    font-family: 'Fraunces', serif;
+    font-size: 64px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--light);
+    line-height: 1;
+    margin-bottom: -8px;
+  }
+
+  .dimension-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+
+  .question-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 32px;
+    color: var(--ink);
+  }
+
+  .options-grid {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--card);
+    border: 1px solid var(--light);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .option-btn:hover {
+    border-color: var(--amber);
+    background: #fff9f0;
+    transform: translateX(4px);
+  }
+
+  .option-btn.selected {
+    border-color: var(--amber);
+    background: #fff3d4;
+  }
+
+  .opt-letter {
+    width: 28px;
+    height: 28px;
+    background: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .option-btn.selected .opt-letter,
+  .option-btn:hover .opt-letter {
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-btn {
+    padding: 12px 24px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink);
+  }
+
+  .nav-btn:hover { background: var(--ink); color: var(--paper); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn:disabled:hover { background: transparent; color: var(--ink); }
+
+  .nav-btn.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .nav-btn.primary:hover { background: var(--amber); color: var(--ink); }
+
+  /* ── LOADING ─────────────────────── */
+  #loading-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 0;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .loading-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .loading-sub {
+    color: var(--mid);
+    font-size: 12px;
+    margin-bottom: 40px;
+  }
+
+  .pulse-ring {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 32px;
+    position: relative;
+  }
+
+  .pulse-ring::before,
+  .pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--amber);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-out infinite;
+  }
+
+  .pulse-ring::after { animation-delay: 0.5s; }
+
+  .pulse-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background: var(--amber);
+    border-radius: 50%;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.3); opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  .loading-steps {
+    text-align: left;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .loading-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 12px;
+    color: var(--mid);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .loading-step.active { opacity: 1; color: var(--ink); }
+  .loading-step.done { opacity: 1; color: var(--success); }
+
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--light);
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .loading-step.active .step-dot { background: var(--amber); }
+  .loading-step.done .step-dot { background: var(--success); }
+
+  /* ── RESULTS ─────────────────────── */
+  #results-screen {
+    display: none;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .result-header {
+    margin-bottom: 40px;
+  }
+
+  .result-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .result-title em { font-style: italic; color: var(--amber); }
+
+  .result-sub {
+    color: var(--mid);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* Score gauge */
+  .score-section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: center;
+    background: var(--ink);
+    padding: 32px;
+    margin-bottom: 32px;
+    color: var(--paper);
+  }
+
+  .score-circle {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .score-circle svg { transform: rotate(-90deg); }
+
+  .score-number {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--amber-bright);
+  }
+
+  .score-number span {
+    font-size: 14px;
+    font-style: normal;
+    color: rgba(246,241,232,0.5);
+  }
+
+  .score-info h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--amber-bright);
+  }
+
+  .score-info p {
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgba(246,241,232,0.7);
+    margin: 0;
+  }
+
+  /* Dimension bars */
+  .dimensions-section {
+    margin-bottom: 32px;
+  }
+
+  .dim-section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 16px;
+  }
+
+  .dim-bar-item {
+    display: grid;
+    grid-template-columns: 130px 1fr 36px;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .dim-name {
+    font-size: 12px;
+    color: var(--mid);
+    font-weight: 500;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: var(--light);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--amber);
+    width: 0;
+    transition: width 1s ease 0.3s;
+  }
+
+  .bar-fill.low { background: var(--rust); }
+  .bar-fill.mid-score { background: var(--amber); }
+  .bar-fill.high { background: var(--sage); }
+
+  .dim-score-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    text-align: right;
+  }
+
+  /* AI Analysis */
+  .analysis-card {
+    background: var(--card);
+    border: 1px solid var(--light);
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .analysis-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .analysis-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--amber);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .analysis-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .analysis-content {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.8;
+  }
+
+  .analysis-content strong { color: var(--ink); font-weight: 500; }
+
+  .action-list {
+    list-style: none;
+    margin-top: 12px;
+  }
+
+  .action-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--light);
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  .action-list li:last-child { border: none; }
+
+  .action-num {
+    width: 20px;
+    height: 20px;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* CTA */
+  .cta-section {
+    background: var(--amber);
+    padding: 32px;
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .cta-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .cta-sub {
+    color: var(--ink);
+    font-size: 13px;
+    margin-bottom: 24px;
+    opacity: 0.7;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px 40px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cta-btn:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .restart-link {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--mid);
+    cursor: pointer;
+    text-decoration: underline;
+    letter-spacing: 0.06em;
+  }
+
+  .restart-link:hover { color: var(--ink); }
+
+  /* ── UTIL ────────────────────────── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 500px) {
+    .score-section { grid-template-columns: 1fr; text-align: center; }
+    .dim-bar-item { grid-template-columns: 90px 1fr 28px; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Glow<span>Agent</span></div>
+  <div class="powered">Powered by Claude AI · Glowdom Technologies</div>
+</header>
+
+<main>
+
+  <!-- INTRO -->
+  <div id="intro-screen">
+    <div class="eyebrow">Free Business Diagnostic</div>
+    <h1>Know your<br><em>business health</em><br>in 10 questions.</h1>
+    <p class="intro-desc">
+      Answer 10 honest questions about your business. GlowAgent's AI analyses your responses across 6 critical dimensions and gives you a personalised health score, your top 3 gaps, and a 30-day action plan — free.
+    </p>
+    <div class="dimensions-row">
+      <span class="dim-tag">Revenue</span>
+      <span class="dim-tag">Operations</span>
+      <span class="dim-tag">Marketing</span>
+      <span class="dim-tag">Finance</span>
+      <span class="dim-tag">Compliance</span>
+      <span class="dim-tag">Growth</span>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">
+      Start Diagnostic
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen">
+    <div class="progress-label">
+      <span id="progress-text">Question 1 of 10</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:10%"></div>
+    </div>
+    <div class="question-num" id="q-num">01</div>
+    <div class="dimension-label" id="q-dim">Revenue</div>
+    <div class="question-text" id="q-text"></div>
+    <div class="options-grid" id="options-container"></div>
+    <div class="nav-row">
+      <button class="nav-btn" id="prev-btn" onclick="prevQuestion()" disabled>← Back</button>
+      <button class="nav-btn primary" id="next-btn" onclick="nextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading-screen">
+    <div class="pulse-ring"><div class="pulse-dot"></div></div>
+    <div class="loading-title">Analysing your business...</div>
+    <div class="loading-sub">GlowAgent is generating your personalised health report</div>
+    <div class="loading-steps">
+      <div class="loading-step" id="step-0"><div class="step-dot"></div>Scoring 6 business dimensions</div>
+      <div class="loading-step" id="step-1"><div class="step-dot"></div>Identifying critical gaps</div>
+      <div class="loading-step" id="step-2"><div class="step-dot"></div>Generating 30-day action plan</div>
+      <div class="loading-step" id="step-3"><div class="step-dot"></div>Preparing your report</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-screen">
+    <div class="result-header">
+      <div class="eyebrow">Your Business Health Report</div>
+      <div class="result-title">Here's where<br><em>you stand.</em></div>
+      <div class="result-sub" id="result-intro"></div>
+    </div>
+
+    <div class="score-section">
+      <div class="score-circle">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#f0a020" stroke-width="8"
+            stroke-dasharray="314" id="score-arc" stroke-dashoffset="314"
+            stroke-linecap="round" style="transition: stroke-dashoffset 1.2s ease 0.3s"/>
+        </svg>
+        <div class="score-number">
+          <div id="score-display">0</div>
+          <span>/100</span>
+        </div>
+      </div>
+      <div class="score-info">
+        <h2 id="score-label">Calculating...</h2>
+        <p id="score-description"></p>
+      </div>
+    </div>
+
+    <div class="dimensions-section">
+      <div class="dim-section-title">Score by Dimension</div>
+      <div id="dim-bars"></div>
+    </div>
+
+    <div id="ai-analysis"></div>
+
+    <div class="cta-section">
+      <div class="cta-title">Ready to fix what's holding you back?</div>
+      <div class="cta-sub">Unlock GlowAgent's full suite — proposal writing, financial projections, compliance guidance and more.</div>
+      <button class="cta-btn">Unlock Full GlowAgent — from NAD 299/mo</button>
+      <br>
+      <span class="restart-link" onclick="restartQuiz()">← Retake diagnostic</span>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 1, dim: "Revenue", dimKey: "revenue",
+    text: "How would you describe your current monthly revenue?",
+    options: [
+      { letter: "A", text: "Pre-revenue — not yet making money", score: 1 },
+      { letter: "B", text: "Inconsistent — some months good, some zero", score: 2 },
+      { letter: "C", text: "Steady but small — under NAD 20,000/month", score: 3 },
+      { letter: "D", text: "Growing — NAD 20,000+ and increasing", score: 4 }
+    ]
+  },
+  {
+    id: 2, dim: "Revenue", dimKey: "revenue",
+    text: "How many paying clients or customers do you currently have?",
+    options: [
+      { letter: "A", text: "None yet", score: 1 },
+      { letter: "B", text: "1–3 clients or customers", score: 2 },
+      { letter: "C", text: "4–10 clients or customers", score: 3 },
+      { letter: "D", text: "More than 10 regulars", score: 4 }
+    ]
+  },
+  {
+    id: 3, dim: "Operations", dimKey: "operations",
+    text: "How do you currently manage your day-to-day business tasks?",
+    options: [
+      { letter: "A", text: "Everything is in my head — no system", score: 1 },
+      { letter: "B", text: "WhatsApp and phone notes", score: 2 },
+      { letter: "C", text: "Spreadsheets or basic tools", score: 3 },
+      { letter: "D", text: "Dedicated software or team systems", score: 4 }
+    ]
+  },
+  {
+    id: 4, dim: "Marketing", dimKey: "marketing",
+    text: "How do new customers currently find your business?",
+    options: [
+      { letter: "A", text: "Word of mouth only", score: 1 },
+      { letter: "B", text: "Social media (informal, no strategy)", score: 2 },
+      { letter: "C", text: "Active social media or basic marketing", score: 3 },
+      { letter: "D", text: "Multiple channels — online, referrals, ads", score: 4 }
+    ]
+  },
+  {
+    id: 5, dim: "Marketing", dimKey: "marketing",
+    text: "Do you have a clear and documented value proposition for your business?",
+    options: [
+      { letter: "A", text: "No — I struggle to explain what makes me different", score: 1 },
+      { letter: "B", text: "I can explain it verbally but nothing is written", score: 2 },
+      { letter: "C", text: "Yes, I have a basic pitch or description", score: 3 },
+      { letter: "D", text: "Yes — it is strong, documented and tested with clients", score: 4 }
+    ]
+  },
+  {
+    id: 6, dim: "Finance", dimKey: "finance",
+    text: "How do you currently track your business finances?",
+    options: [
+      { letter: "A", text: "I don't — money comes in and goes out", score: 1 },
+      { letter: "B", text: "I check my bank account occasionally", score: 2 },
+      { letter: "C", text: "I have a basic spreadsheet or record", score: 3 },
+      { letter: "D", text: "I use accounting software and review monthly", score: 4 }
+    ]
+  },
+  {
+    id: 7, dim: "Finance", dimKey: "finance",
+    text: "How confident are you in applying for business funding or a loan?",
+    options: [
+      { letter: "A", text: "Not at all — I would not know where to start", score: 1 },
+      { letter: "B", text: "I have tried before but was unsuccessful", score: 2 },
+      { letter: "C", text: "I know the process but need help with documents", score: 3 },
+      { letter: "D", text: "Very confident — I have secured funding before", score: 4 }
+    ]
+  },
+  {
+    id: 8, dim: "Compliance", dimKey: "compliance",
+    text: "What is the legal and compliance status of your business?",
+    options: [
+      { letter: "A", text: "Unregistered — operating informally", score: 1 },
+      { letter: "B", text: "Registered but tax and compliance not up to date", score: 2 },
+      { letter: "C", text: "Registered and mostly compliant", score: 3 },
+      { letter: "D", text: "Fully registered, tax compliant, all paperwork in order", score: 4 }
+    ]
+  },
+  {
+    id: 9, dim: "Operations", dimKey: "operations",
+    text: "Do you currently have a written business plan or growth strategy?",
+    options: [
+      { letter: "A", text: "No — the plan is in my head", score: 1 },
+      { letter: "B", text: "I have rough notes or ideas written down", score: 2 },
+      { letter: "C", text: "I have a basic written plan", score: 3 },
+      { letter: "D", text: "Yes — a detailed plan I review regularly", score: 4 }
+    ]
+  },
+  {
+    id: 10, dim: "Growth", dimKey: "growth",
+    text: "What is your biggest barrier to growing your business right now?",
+    options: [
+      { letter: "A", text: "Lack of capital / funding", score: 2 },
+      { letter: "B", text: "Not enough clients or customers", score: 2 },
+      { letter: "C", text: "Lack of skills or knowledge", score: 2 },
+      { letter: "D", text: "No time — I am too busy running daily operations", score: 2 }
+    ]
+  }
+];
+
+const DIM_LABELS = {
+  revenue: "Revenue",
+  operations: "Operations",
+  marketing: "Marketing",
+  finance: "Finance",
+  compliance: "Compliance",
+  growth: "Growth Readiness"
+};
+
+let currentQ = 0;
+let answers = {};
+
+function startQuiz() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+
+  document.getElementById('q-num').textContent = String(q.id).padStart(2, '0');
+  document.getElementById('q-dim').textContent = q.dim;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-text').textContent = `Question ${currentQ + 1} of ${total}`;
+  document.getElementById('progress-fill').style.width = `${((currentQ + 1) / total) * 100}%`;
+
+  const isLast = currentQ === total - 1;
+  document.getElementById('next-btn').textContent = isLast ? 'See My Results →' : 'Next →';
+  document.getElementById('prev-btn').disabled = currentQ === 0;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `<div class="opt-letter">${opt.letter}</div><div>${opt.text}</div>`;
+    btn.onclick = () => selectOption(i);
+    container.appendChild(btn);
+  });
+}
+
+function selectOption(idx) {
+  answers[currentQ] = idx;
+  document.querySelectorAll('.option-btn').forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+  });
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === undefined) {
+    document.querySelectorAll('.option-btn')[0].style.animation = 'shake 0.3s';
+    return;
+  }
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showLoading();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function showLoading() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'block';
+
+  const steps = ['step-0','step-1','step-2','step-3'];
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      if (i > 0) {
+        document.getElementById(steps[i-1]).className = 'loading-step done';
+      }
+      document.getElementById(id).className = 'loading-step active';
+    }, i * 900);
+  });
+
+  setTimeout(() => {
+    computeAndShowResults();
+  }, 4200);
+}
+
+function computeAndShowResults() {
+  // Compute dimension scores
+  const dimScores = { revenue: [], operations: [], marketing: [], finance: [], compliance: [], growth: [] };
+
+  QUESTIONS.forEach((q, i) => {
+    const ansIdx = answers[i] ?? 0;
+    const score = q.options[ansIdx].score;
+    dimScores[q.dimKey].push(score);
+  });
+
+  const dimAvgs = {};
+  Object.keys(dimScores).forEach(k => {
+    const scores = dimScores[k];
+    dimAvgs[k] = scores.length ? Math.round((scores.reduce((a,b)=>a+b,0)/scores.length) * 25) : 25;
+  });
+
+  const overall = Math.round(Object.values(dimAvgs).reduce((a,b)=>a+b,0) / Object.keys(dimAvgs).length);
+
+  // Get gap answer for Q10
+  const q10ans = QUESTIONS[9].options[answers[9] ?? 0].text;
+
+  buildResults(overall, dimAvgs, q10ans);
+}
+
+function buildResults(overall, dimAvgs, mainBarrier) {
+  document.getElementById('loading-screen').style.display = 'none';
+  const rs = document.getElementById('results-screen');
+  rs.style.display = 'block';
+
+  // Intro
+  const intros = {
+    high: `Your business shows strong foundations across multiple dimensions. With the right support, you're positioned to scale meaningfully within the next 12 months.`,
+    mid: `Your business has real momentum but key gaps are holding back your growth. Targeted action on your weakest dimensions could transform your trajectory within 90 days.`,
+    low: `Your business is at a critical early stage. The good news — every gap you have is solvable with the right tools and guidance. GlowAgent was built for exactly where you are now.`
+  };
+  const tier = overall >= 70 ? 'high' : overall >= 45 ? 'mid' : 'low';
+  document.getElementById('result-intro').textContent = intros[tier];
+
+  // Score arc animation
+  setTimeout(() => {
+    const arc = document.getElementById('score-arc');
+    const circumference = 314;
+    const offset = circumference - (overall / 100) * circumference;
+    arc.style.strokeDashoffset = offset;
+
+    // Count up
+    let count = 0;
+    const target = overall;
+    const interval = setInterval(() => {
+      count = Math.min(count + 2, target);
+      document.getElementById('score-display').textContent = count;
+      if (count >= target) clearInterval(interval);
+    }, 20);
+  }, 100);
+
+  // Score label
+  const labels = {
+    high: ['Strong Foundation', 'Your systems and strategy are working. Time to scale.'],
+    mid: ['Promising but Patchy', 'Clear strengths, but critical gaps are blocking your potential.'],
+    low: ['Early Stage', 'Your business needs foundational support — and that\'s exactly what we\'re here for.']
+  };
+  document.getElementById('score-label').textContent = labels[tier][0];
+  document.getElementById('score-description').textContent = labels[tier][1];
+
+  // Dimension bars
+  const barsEl = document.getElementById('dim-bars');
+  barsEl.innerHTML = '';
+  const sorted = Object.entries(dimAvgs).sort((a,b) => b[1]-a[1]);
+  sorted.forEach(([key, score]) => {
+    const cls = score >= 70 ? 'high' : score >= 45 ? 'mid-score' : 'low';
+    const row = document.createElement('div');
+    row.className = 'dim-bar-item';
+    row.innerHTML = `
+      <div class="dim-name">${DIM_LABELS[key]}</div>
+      <div class="bar-track"><div class="bar-fill ${cls}" data-width="${score}"></div></div>
+      <div class="dim-score-label">${score}</div>
+    `;
+    barsEl.appendChild(row);
+  });
+
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+  }, 200);
+
+  // Find top 3 weakest dims
+  const weakest = [...sorted].reverse().slice(0, 3);
+
+  // AI Analysis section
+  const aiEl = document.getElementById('ai-analysis');
+  aiEl.innerHTML = '';
+
+  // Top Gaps Card
+  const gapsCard = document.createElement('div');
+  gapsCard.className = 'analysis-card';
+  gapsCard.innerHTML = `
+    <div class="analysis-card-header">
+      <div class="analysis-icon">⚠️</div>
+      <div class="analysis-card-title">Your Top 3 Priority Gaps</div>
+    </div>
+    <div class="analysis-content">
+      ${weakest.map(([key, score]) => `
+        <div style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--light)">
+          <strong>${DIM_LABELS[key]} — ${score}/100</strong><br>
+          <span>${getGapInsight(key, score)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  aiEl.appendChild(gapsCard);
+
+  // 30-Day Action Plan
+  const actions = get30DayPlan(weakest, mainBarrier);
+  const planCard = document.createElement('div');
+  planCard.className = 'analysis-card';
+  planCard.innerHTML = `
+    <div class="analysis-card-header">
+      <div class="analysis-icon">🎯</div>
+      <div class="analysis-card-title">Your 30-Day Action Plan</div>
+    </div>
+    <div class="analysis-content">
+      <p style="margin-bottom:12px">Based on your profile, here are the highest-impact actions to take in the next 30 days:</p>
+      <ul class="action-list">
+        ${actions.map((a, i) => `
+          <li>
+            <div class="action-num">${i+1}</div>
+            <div>${a}</div>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+  aiEl.appendChild(planCard);
+
+  // Strengths card
+  const strongDims = sorted.slice(0, 2);
+  const strengthCard = document.createElement('div');
+  strengthCard.className = 'analysis-card';
+  strengthCard.innerHTML = `
+    <div class="analysis-card-header">
+      <div class="analysis-icon">💪</div>
+      <div class="analysis-card-title">Your Business Strengths</div>
+    </div>
+    <div class="analysis-content">
+      ${strongDims.map(([key, score]) => `
+        <div style="margin-bottom:10px">
+          <strong>${DIM_LABELS[key]} (${score}/100)</strong> — ${getStrengthInsight(key, score)}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  aiEl.appendChild(strengthCard);
+}
+
+function getGapInsight(dim, score) {
+  const insights = {
+    revenue: score < 50
+      ? "Your revenue is inconsistent or non-existent. The priority is landing your first 3 paying clients and creating a repeatable sales process."
+      : "Revenue exists but needs systemisation. Focus on client retention and referral mechanisms.",
+    operations: score < 50
+      ? "Your business runs on memory and improvisation. This creates risk — one busy week and things fall through. You need basic systems immediately."
+      : "Your operations work but rely too heavily on you. Document core processes to free up your time.",
+    marketing: score < 50
+      ? "You have no reliable way to attract new clients. Word of mouth alone cannot build a scalable business. A basic digital presence is urgent."
+      : "Your marketing exists but lacks strategy. Define your ideal client and build a focused acquisition channel.",
+    finance: score < 50
+      ? "You are operating financially blind. Without tracking income and expenses, you cannot make good business decisions or qualify for funding."
+      : "Basic financial tracking exists. The next step is building forward-looking projections and understanding your unit economics.",
+    compliance: score < 50
+      ? "Operating informally limits your ability to win corporate clients, access funding, and protect yourself legally. Registration is a non-negotiable next step."
+      : "Compliance foundations exist. Ensure tax submissions are current and B-BBEE status is documented.",
+    growth: score < 50
+      ? "Your growth is blocked by foundational gaps. Solve your top 2 dimension issues before pursuing aggressive expansion."
+      : "You are close to a growth inflection point. The right support and capital could unlock significant scale."
+  };
+  return insights[dim] || "This area needs attention. GlowAgent can help you build a specific improvement plan.";
+}
+
+function getStrengthInsight(dim, score) {
+  const insights = {
+    revenue: "You have demonstrated revenue and client traction. This is your strongest foundation to build on.",
+    operations: "Your business runs with some structure. This gives you capacity to focus on growth rather than firefighting.",
+    marketing: "You have marketing awareness and some channels working. Build on this with more strategic targeting.",
+    finance: "Your financial awareness is above average for an early-stage SME. Use this to access capital.",
+    compliance: "Your legal and compliance foundations are solid. This unlocks corporate clients and formal funding channels.",
+    growth: "Your growth mindset and clarity about barriers puts you ahead. Channel this into structured execution."
+  };
+  return insights[dim] || "This is a relative strength — continue investing here.";
+}
+
+function get30DayPlan(weakest, barrier) {
+  const plans = {
+    revenue: "Identify your 5 ideal clients by name. Reach out to each with a personalised proposal this week.",
+    operations: "Spend 2 hours documenting your 3 most repeated tasks as step-by-step checklists.",
+    marketing: "Create or update your WhatsApp Business profile and post consistently 3 times per week for 30 days.",
+    finance: "Open a dedicated business bank account today. Record every transaction for the next 30 days.",
+    compliance: "Register your business with CIPA (Namibia) or CIPC (South Africa) — both can be done online in under a week.",
+    growth: "Write a one-page business summary including what you do, who you serve, and what results you deliver."
+  };
+
+  const actions = weakest.map(([key]) => plans[key]);
+
+  // Add barrier-specific action
+  if (barrier.includes("capital") || barrier.includes("funding")) {
+    actions.push("Identify 3 accessible funding sources in your country and check your eligibility. GlowAgent can write your funding application.");
+  } else if (barrier.includes("clients") || barrier.includes("customers")) {
+    actions.push("Write a professional business proposal template you can send to prospective clients within 24 hours of any enquiry.");
+  } else if (barrier.includes("skills") || barrier.includes("knowledge")) {
+    actions.push("Start a daily 15-minute learning habit — use GlowAgent to learn one business concept per day inside your actual work.");
+  } else {
+    actions.push("Audit how you spend your time this week. Identify 2 tasks to automate or delegate using AI tools.");
+  }
+
+  return actions.slice(0, 5);
+}
+
+function restartQuiz() {
+  currentQ = 0;
+  answers = {};
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('intro-screen').style.display = 'block';
+}
+</script>
+</body>
+</html>
