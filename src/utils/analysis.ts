@@ -4,6 +4,14 @@ export interface DimensionScores {
   [key: string]: number;
 }
 
+export interface BenchmarkData {
+  dimension: string;
+  yourScore: number;
+  avgScore: number;
+  topQuartile: number;
+  percentile: number;
+}
+
 export interface AnalysisResult {
   overallScore: number;
   dimensionScores: DimensionScores;
@@ -12,6 +20,31 @@ export interface AnalysisResult {
   actionPlan: string[];
   strengths: Array<{ dimension: string; score: number; insight: string }>;
   mainBarrier: string;
+  benchmarks: BenchmarkData[];
+  percentileRank: number;
+}
+
+const BENCHMARK_DATA = {
+  revenue: { avg: 52, topQuartile: 75, median: 50 },
+  operations: { avg: 48, topQuartile: 72, median: 45 },
+  marketing: { avg: 51, topQuartile: 73, median: 48 },
+  finance: { avg: 46, topQuartile: 70, median: 43 },
+  compliance: { avg: 54, topQuartile: 78, median: 52 },
+  growth: { avg: 49, topQuartile: 71, median: 47 }
+};
+
+function calculatePercentile(score: number, dimension: string): number {
+  const { avg, topQuartile, median } = BENCHMARK_DATA[dimension as keyof typeof BENCHMARK_DATA];
+
+  if (score >= topQuartile) {
+    return 75 + ((score - topQuartile) / (100 - topQuartile)) * 25;
+  } else if (score >= median) {
+    return 50 + ((score - median) / (topQuartile - median)) * 25;
+  } else if (score >= avg - 15) {
+    return 25 + ((score - (avg - 15)) / (median - (avg - 15))) * 25;
+  } else {
+    return Math.max(1, (score / (avg - 15)) * 25);
+  }
 }
 
 export function analyzeResults(answers: Record<number, number>): AnalysisResult {
@@ -59,10 +92,26 @@ export function analyzeResults(answers: Record<number, number>): AnalysisResult 
   const strengths = strongest.map(([key, score]) => ({
     dimension: DIM_LABELS[key],
     score,
-    insight: getStrengthInsight(key)
+    insight: getStrengthInsight(key, score)
   }));
 
   const actionPlan = get30DayPlan(weakest, mainBarrier);
+
+  const benchmarks: BenchmarkData[] = Object.entries(dimAvgs).map(([key, score]) => {
+    const benchData = BENCHMARK_DATA[key as keyof typeof BENCHMARK_DATA];
+    return {
+      dimension: DIM_LABELS[key],
+      yourScore: score,
+      avgScore: benchData.avg,
+      topQuartile: benchData.topQuartile,
+      percentile: Math.round(calculatePercentile(score, key))
+    };
+  });
+
+  const allPercentiles = benchmarks.map(b => b.percentile);
+  const percentileRank = Math.round(
+    allPercentiles.reduce((a, b) => a + b, 0) / allPercentiles.length
+  );
 
   return {
     overallScore: overall,
@@ -71,7 +120,9 @@ export function analyzeResults(answers: Record<number, number>): AnalysisResult 
     topGaps,
     actionPlan,
     strengths,
-    mainBarrier
+    mainBarrier,
+    benchmarks,
+    percentileRank
   };
 }
 
@@ -105,8 +156,8 @@ function getGapInsight(dim: string, score: number): string {
   return insights[dim] || 'This area needs attention. GlowAgent can help you build a specific improvement plan.';
 }
 
-function getStrengthInsight(dim: string): string {
-  const insights: Record<string, string> = {
+function getStrengthInsight(dim: string, score: number): string {
+  const baseInsights: Record<string, string> = {
     revenue: 'You have demonstrated revenue and client traction. This is your strongest foundation to build on.',
     operations: 'Your business runs with some structure. This gives you capacity to focus on growth rather than firefighting.',
     marketing: 'You have marketing awareness and some channels working. Build on this with more strategic targeting.',
@@ -114,7 +165,16 @@ function getStrengthInsight(dim: string): string {
     compliance: 'Your legal and compliance foundations are solid. This unlocks corporate clients and formal funding channels.',
     growth: 'Your growth mindset and clarity about barriers puts you ahead. Channel this into structured execution.'
   };
-  return insights[dim] || 'This is a relative strength — continue investing here.';
+
+  const baseInsight = baseInsights[dim] || 'This is a relative strength — continue investing here.';
+
+  if (score >= 75) {
+    return baseInsight + ' You score in the top 25% of SMEs in this area.';
+  } else if (score >= 60) {
+    return baseInsight + ' You are above average compared to peer businesses.';
+  }
+
+  return baseInsight;
 }
 
 function get30DayPlan(

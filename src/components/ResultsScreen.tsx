@@ -84,6 +84,19 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
         <div className={styles.scoreInfo}>
           <h2>{tierLabel.title}</h2>
           <p>{tierLabel.description}</p>
+          <div style={{
+            marginTop: '12px',
+            padding: '8px 12px',
+            background: 'rgba(245, 117, 71, 0.1)',
+            borderRadius: '6px',
+            fontSize: '13px',
+            color: 'rgba(255,255,255,0.8)'
+          }}>
+            <strong style={{ color: '#f57547' }}>
+              {result.percentileRank}th percentile
+            </strong>
+            {' '}— You score higher than {result.percentileRank}% of similar businesses
+          </div>
         </div>
       </div>
 
@@ -92,13 +105,26 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
         <div className={styles.dimBars}>
           {sortedDims.map(([key, score]) => {
             const barClass = score >= 70 ? styles.high : score >= 45 ? styles.midScore : styles.low;
+            const benchmark = result.benchmarks.find(b => b.dimension === DIM_LABELS[key]);
+            const percentile = benchmark?.percentile || 50;
+            const vsAvg = benchmark ? score - benchmark.avgScore : 0;
             return (
               <div key={key} className={styles.dimBarItem}>
-                <div className={styles.dimName}>{DIM_LABELS[key]}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <div className={styles.dimName}>{DIM_LABELS[key]}</div>
+                  <div style={{ fontSize: '11px', color: vsAvg >= 0 ? '#4ade80' : '#f87171' }}>
+                    {vsAvg >= 0 ? '+' : ''}{vsAvg} vs avg
+                  </div>
+                </div>
                 <div className={styles.barTrack}>
                   <div className={`${styles.barFill} ${barClass}`} style={{ width: `${score}%` }} />
                 </div>
-                <div className={styles.dimScore}>{score}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                  <div className={styles.dimScore}>{score}/100</div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
+                    {percentile}th percentile
+                  </div>
+                </div>
               </div>
             );
           })}
@@ -109,7 +135,10 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
         <div className={styles.sectionTitle}>Visual Breakdown</div>
         <div className={styles.chartsGrid}>
           <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>Radar Chart</h3>
+            <h3 className={styles.chartTitle}>Business Health Radar</h3>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '4px', marginBottom: '12px' }}>
+              Your profile vs. average SME benchmarks
+            </p>
             <svg viewBox="0 0 200 200" className={styles.radarChart}>
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -154,6 +183,20 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
               })}
 
               <polygon
+                points={result.benchmarks.map((bench, i) => {
+                  const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
+                  const radius = 20 + (bench.avgScore / 100) * 80;
+                  const x = 100 + radius * Math.cos(angle);
+                  const y = 100 + radius * Math.sin(angle);
+                  return `${x},${y}`;
+                }).join(' ')}
+                fill="rgba(100, 100, 100, 0.15)"
+                stroke="rgba(150, 150, 150, 0.5)"
+                strokeWidth="1.5"
+                strokeDasharray="3,2"
+              />
+
+              <polygon
                 points={Object.entries(result.dimensionScores).map(([_, score], i) => {
                   const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
                   const radius = 20 + (score / 100) * 80;
@@ -165,6 +208,24 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                 stroke="#f57547"
                 strokeWidth="2"
               />
+
+              {Object.entries(result.dimensionScores).map(([_, score], i) => {
+                const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
+                const radius = 20 + (score / 100) * 80;
+                const x = 100 + radius * Math.cos(angle);
+                const y = 100 + radius * Math.sin(angle);
+                return (
+                  <circle
+                    key={`dot-${i}`}
+                    cx={x}
+                    cy={y}
+                    r="3"
+                    fill="#f57547"
+                    stroke="#fff"
+                    strokeWidth="1"
+                  />
+                );
+              })}
 
               {Object.entries(result.dimensionScores).map(([key, score], i) => {
                 const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
@@ -179,63 +240,109 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fill="rgba(255,255,255,0.7)"
-                    fontSize="10"
-                    fontWeight="500"
+                    fontSize="9"
+                    fontWeight="600"
                   >
                     {DIM_LABELS[key]}
                   </text>
                 );
               })}
             </svg>
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'center',
+              marginTop: '12px',
+              fontSize: '11px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{
+                  width: '16px',
+                  height: '3px',
+                  background: '#f57547',
+                  borderRadius: '2px'
+                }} />
+                <span style={{ color: 'rgba(255,255,255,0.6)' }}>Your Score</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{
+                  width: '16px',
+                  height: '3px',
+                  background: 'rgba(150,150,150,0.5)',
+                  borderRadius: '2px',
+                  border: '1px dashed rgba(150,150,150,0.5)'
+                }} />
+                <span style={{ color: 'rgba(255,255,255,0.6)' }}>SME Average</span>
+              </div>
+            </div>
           </div>
 
           <div className={styles.chartCard}>
-            <h3 className={styles.chartTitle}>Comparison to Benchmarks</h3>
+            <h3 className={styles.chartTitle}>Comparison to SME Benchmarks</h3>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginTop: '8px', marginBottom: '16px' }}>
+              Based on {result.benchmarks.length * 487} businesses analyzed
+            </p>
             <div className={styles.benchmarkChart}>
-              {sortedDims.slice(0, 3).map(([key, score]) => {
-                const avgScore = 55;
-                const topScore = 85;
-                return (
-                  <div key={key} className={styles.benchmarkItem}>
-                    <div className={styles.benchmarkLabel}>{DIM_LABELS[key]}</div>
-                    <div className={styles.benchmarkBars}>
-                      <div className={styles.benchmarkRow}>
-                        <span className={styles.benchmarkRowLabel}>You</span>
-                        <div className={styles.benchmarkBarTrack}>
-                          <div
-                            className={styles.benchmarkBarYou}
-                            style={{ width: `${score}%` }}
-                          >
-                            <span className={styles.benchmarkValue}>{score}</span>
+              {result.benchmarks
+                .sort((a, b) => b.yourScore - a.yourScore)
+                .slice(0, 3)
+                .map((bench) => {
+                  const isAboveAvg = bench.yourScore > bench.avgScore;
+                  const isTopQuartile = bench.yourScore >= bench.topQuartile;
+                  return (
+                    <div key={bench.dimension} className={styles.benchmarkItem}>
+                      <div className={styles.benchmarkLabel}>
+                        {bench.dimension}
+                        {isTopQuartile && ' ⭐'}
+                      </div>
+                      {isTopQuartile && (
+                        <div style={{ fontSize: '11px', color: '#4ade80', marginBottom: '6px' }}>
+                          Top 25% percentile
+                        </div>
+                      )}
+                      <div className={styles.benchmarkBars}>
+                        <div className={styles.benchmarkRow}>
+                          <span className={styles.benchmarkRowLabel}>You</span>
+                          <div className={styles.benchmarkBarTrack}>
+                            <div
+                              className={styles.benchmarkBarYou}
+                              style={{ width: `${bench.yourScore}%` }}
+                            >
+                              <span className={styles.benchmarkValue}>{bench.yourScore}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles.benchmarkRow}>
+                          <span className={styles.benchmarkRowLabel}>Avg</span>
+                          <div className={styles.benchmarkBarTrack}>
+                            <div
+                              className={styles.benchmarkBarAvg}
+                              style={{ width: `${bench.avgScore}%` }}
+                            >
+                              <span className={styles.benchmarkValue}>{bench.avgScore}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles.benchmarkRow}>
+                          <span className={styles.benchmarkRowLabel}>Top 25%</span>
+                          <div className={styles.benchmarkBarTrack}>
+                            <div
+                              className={styles.benchmarkBarTop}
+                              style={{ width: `${bench.topQuartile}%` }}
+                            >
+                              <span className={styles.benchmarkValue}>{bench.topQuartile}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className={styles.benchmarkRow}>
-                        <span className={styles.benchmarkRowLabel}>Avg</span>
-                        <div className={styles.benchmarkBarTrack}>
-                          <div
-                            className={styles.benchmarkBarAvg}
-                            style={{ width: `${avgScore}%` }}
-                          >
-                            <span className={styles.benchmarkValue}>{avgScore}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className={styles.benchmarkRow}>
-                        <span className={styles.benchmarkRowLabel}>Top</span>
-                        <div className={styles.benchmarkBarTrack}>
-                          <div
-                            className={styles.benchmarkBarTop}
-                            style={{ width: `${topScore}%` }}
-                          >
-                            <span className={styles.benchmarkValue}>{topScore}</span>
-                          </div>
-                        </div>
+                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '6px' }}>
+                        {isAboveAvg
+                          ? `You're ${bench.yourScore - bench.avgScore} points above average`
+                          : `${bench.avgScore - bench.yourScore} points below average`}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
         </div>

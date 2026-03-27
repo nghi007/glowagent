@@ -128,9 +128,21 @@ export const QUESTIONS: Question[] = [
     text: "What is your biggest barrier to growing your business right now?",
     options: [
       { letter: "A", text: "Lack of capital / funding", score: 2 },
-      { letter: "B", text: "Not enough clients or customers", score: 2 },
+      { letter: "B", text: "Not enough clients or customers", score: 1 },
       { letter: "C", text: "Lack of skills or knowledge", score: 2 },
-      { letter: "D", text: "No time — I am too busy running daily operations", score: 2 }
+      { letter: "D", text: "No time — I am too busy running daily operations", score: 3 }
+    ]
+  },
+  {
+    id: 11,
+    dim: "Growth",
+    dimKey: "growth",
+    text: "How clear are you about your business goals for the next 12 months?",
+    options: [
+      { letter: "A", text: "Not clear — I am still figuring it out", score: 1 },
+      { letter: "B", text: "I have general ideas but nothing specific", score: 2 },
+      { letter: "C", text: "I have specific goals but no detailed plan", score: 3 },
+      { letter: "D", text: "Very clear — I have written goals and milestones", score: 4 }
     ]
   }
 ];
