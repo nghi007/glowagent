@@ -186,7 +186,7 @@ function get30DayPlan(
     operations: 'Spend 2 hours documenting your 3 most repeated tasks as step-by-step checklists.',
     marketing: 'Create or update your WhatsApp Business profile and post consistently 3 times per week for 30 days.',
     finance: 'Open a dedicated business bank account today. Record every transaction for the next 30 days.',
-    compliance: 'Register your business with CIPA (Namibia) or CIPC (South Africa) — both can be done online in under a week.',
+    compliance: 'Register your business with BIPA (Namibia) or CIPC (South Africa) — both can be done online in under a week.',
     growth: 'Write a one-page business summary including what you do, who you serve, and what results you deliver.'
   };
 
