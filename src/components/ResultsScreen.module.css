@@ -268,14 +268,18 @@
 
 .chartsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 100%;
 }
 
 .chartCard {
   background: var(--card);
   border: 1px solid var(--light);
-  padding: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .chartTitle {
@@ -291,17 +295,25 @@
 .radarChart {
   width: 100%;
   height: auto;
-  max-width: 280px;
-  margin: 0 auto;
+  max-width: 340px;
+  margin: 20px auto;
   display: block;
+  padding: 10px;
 }
 
 .radarChart text,
 .radarLabel {
   fill: var(--ink) !important;
+  font-family: var(--sans);
 }
 
 @media print {
+  .radarChart {
+    max-width: 320px;
+    page-break-inside: avoid;
+    margin: 30px auto;
+  }
+
   .radarChart text,
   .radarLabel {
     fill: #0f0e0c !important;
@@ -333,9 +345,9 @@
 
 .benchmarkRow {
   display: grid;
-  grid-template-columns: 32px 1fr;
+  grid-template-columns: 40px 1fr;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .benchmarkRowLabel {
@@ -345,10 +357,11 @@
 }
 
 .benchmarkBarTrack {
-  height: 20px;
+  height: 24px;
   background: var(--light);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  border-radius: 2px;
 }
 
 .benchmarkBarYou,
@@ -376,9 +389,11 @@
 }
 
 .benchmarkValue {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: white;
+  white-space: nowrap;
+  padding: 0 4px;
 }
 
 .cta {

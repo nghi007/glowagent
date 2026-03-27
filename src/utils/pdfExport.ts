@@ -67,17 +67,21 @@ export async function exportToPDF(element: HTMLElement, result: AnalysisResult):
         max-width: 100%;
         height: auto;
         page-break-inside: avoid;
+        overflow: visible !important;
       }
 
       .radarChart {
-        width: 280px !important;
-        height: 280px !important;
-        margin: 20px auto;
+        width: 340px !important;
+        height: auto !important;
+        margin: 30px auto !important;
+        padding: 20px !important;
+        overflow: visible !important;
       }
 
       /* Fix text colors for print */
       .radarChart text, .radarLabel {
         fill: #0f0e0c !important;
+        font-size: 10px !important;
       }
 
       /* Ensure benchmark charts are readable */
@@ -87,16 +91,31 @@ export async function exportToPDF(element: HTMLElement, result: AnalysisResult):
 
       .benchmarkItem {
         margin-bottom: 20px;
+        page-break-inside: avoid;
+      }
+
+      .benchmarkRow {
+        margin-bottom: 12px;
+      }
+
+      .benchmarkBarTrack {
+        overflow: visible !important;
       }
 
       @page {
         size: A4;
-        margin: 1.5cm;
+        margin: 2cm 1.5cm;
       }
 
       /* First page */
       @page :first {
-        margin-top: 1cm;
+        margin-top: 1.5cm;
+      }
+
+      /* Ensure content doesn't overflow */
+      #report-content {
+        max-width: 100%;
+        overflow: visible;
       }
 
       /* Section spacing */

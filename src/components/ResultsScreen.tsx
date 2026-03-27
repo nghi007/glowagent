@@ -139,7 +139,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
             <p style={{ fontSize: '12px', color: 'var(--mid)', opacity: 0.7, marginTop: '4px', marginBottom: '12px' }}>
               Your profile vs. average SME benchmarks
             </p>
-            <svg viewBox="0 0 200 200" className={styles.radarChart}>
+            <svg viewBox="0 0 280 280" className={styles.radarChart} style={{ overflow: 'visible' }}>
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                   <circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)" />
@@ -150,8 +150,8 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                 const radius = 20 + level * 16;
                 const points = Object.keys(result.dimensionScores).map((_, i) => {
                   const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
-                  const x = 100 + radius * Math.cos(angle);
-                  const y = 100 + radius * Math.sin(angle);
+                  const x = 140 + radius * Math.cos(angle);
+                  const y = 140 + radius * Math.sin(angle);
                   return `${x},${y}`;
                 }).join(' ');
                 return (
@@ -167,13 +167,13 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
 
               {Object.keys(result.dimensionScores).map((_, i) => {
                 const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
-                const x2 = 100 + 100 * Math.cos(angle);
-                const y2 = 100 + 100 * Math.sin(angle);
+                const x2 = 140 + 100 * Math.cos(angle);
+                const y2 = 140 + 100 * Math.sin(angle);
                 return (
                   <line
                     key={i}
-                    x1="100"
-                    y1="100"
+                    x1="140"
+                    y1="140"
                     x2={x2}
                     y2={y2}
                     stroke="rgba(255,255,255,0.1)"
@@ -186,8 +186,8 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                 points={result.benchmarks.map((bench, i) => {
                   const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
                   const radius = 20 + (bench.avgScore / 100) * 80;
-                  const x = 100 + radius * Math.cos(angle);
-                  const y = 100 + radius * Math.sin(angle);
+                  const x = 140 + radius * Math.cos(angle);
+                  const y = 140 + radius * Math.sin(angle);
                   return `${x},${y}`;
                 }).join(' ')}
                 fill="rgba(100, 100, 100, 0.15)"
@@ -200,8 +200,8 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                 points={Object.entries(result.dimensionScores).map(([_, score], i) => {
                   const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
                   const radius = 20 + (score / 100) * 80;
-                  const x = 100 + radius * Math.cos(angle);
-                  const y = 100 + radius * Math.sin(angle);
+                  const x = 140 + radius * Math.cos(angle);
+                  const y = 140 + radius * Math.sin(angle);
                   return `${x},${y}`;
                 }).join(' ')}
                 fill="rgba(245, 117, 71, 0.3)"
@@ -212,8 +212,8 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
               {Object.entries(result.dimensionScores).map(([_, score], i) => {
                 const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
                 const radius = 20 + (score / 100) * 80;
-                const x = 100 + radius * Math.cos(angle);
-                const y = 100 + radius * Math.sin(angle);
+                const x = 140 + radius * Math.cos(angle);
+                const y = 140 + radius * Math.sin(angle);
                 return (
                   <circle
                     key={`dot-${i}`}
@@ -229,9 +229,9 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
 
               {Object.entries(result.dimensionScores).map(([key, score], i) => {
                 const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2;
-                const labelRadius = 110;
-                const x = 100 + labelRadius * Math.cos(angle);
-                const y = 100 + labelRadius * Math.sin(angle);
+                const labelRadius = 115;
+                const x = 140 + labelRadius * Math.cos(angle);
+                const y = 140 + labelRadius * Math.sin(angle);
                 return (
                   <text
                     key={key}
@@ -239,7 +239,7 @@ export function ResultsScreen({ result, onRestart }: ResultsScreenProps) {
                     y={y}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="9"
+                    fontSize="10"
                     fontWeight="600"
                     className="radarLabel"
                   >
